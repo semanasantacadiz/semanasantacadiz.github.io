@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semana Santa de Cádiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --negro: #0a0804;
+    --morado: #2a0e3f;
+    --oro: #c9922a;
+    --oro-claro: #f0c060;
+    --oro-brillante: #ffe08a;
+    --crema: #f5ead8;
+    --crema-oscuro: #e8d5b0;
+    --blanco: #fdf6ec;
+    --verde-ok: rgba(34,90,34,0.55);
+    --verde-txt: #a5d6a7;
+    --rojo-err: rgba(90,20,20,0.55);
+    --rojo-txt: #ef9a9a;
+  }
+  body {
+    background: var(--negro); color: var(--crema);
+    font-family: 'EB Garamond', serif; min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(42,14,63,.8) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(139,26,26,.35) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header { text-align: center; padding: 44px 20px 28px; }
+  .header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem,4vw,2.5rem);
+    color: var(--oro-claro);
+    text-shadow: 0 0 40px rgba(201,146,42,.45);
+    line-height: 1.3;
+  }
+  .header p {
+    font-family: 'Cinzel', serif; color: var(--crema-oscuro); opacity: .65;
+    font-size: .85rem; letter-spacing: .25em; text-transform: uppercase; margin-top: 10px;
+  }
+  .ornament {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin: 14px auto; color: var(--oro); max-width: 360px;
+  }
+  .ornament::before, .ornament::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--oro), transparent);
+  }
+  .candles { display: flex; justify-content: center; gap: 56px; margin-bottom: 8px; }
+  .candle { font-size: 1.7rem; animation: flicker 2s infinite alternate; }
+  .candle:nth-child(2) { animation-delay: .7s; }
+  .candle:nth-child(3) { animation-delay: 1.3s; }
+  @keyframes flicker { 0%{opacity:.9;transform:scale(1)} 100%{opacity:.55;transform:scale(.94)} }
+
+  /* NAV */
+  .nav { display: flex; justify-content: center; gap: 10px; padding: 0 20px 36px; flex-wrap: wrap; }
+  .nav-btn {
+    font-family: 'Cinzel', serif; font-size: .76rem; letter-spacing: .15em; text-transform: uppercase;
+    padding: 11px 22px; border: 1px solid var(--oro); background: transparent; color: var(--oro-claro);
+    cursor: pointer; transition: all .3s; position: relative; overflow: hidden;
+  }
+  .nav-btn::before {
+    content: ''; position: absolute; inset: 0; background: var(--oro);
+    transform: scaleX(0); transform-origin: left; transition: transform .3s; z-index: 0;
+  }
+  .nav-btn span { position: relative; z-index: 1; }
+  .nav-btn:hover::before, .nav-btn.active::before { transform: scaleX(1); }
+  .nav-btn:hover, .nav-btn.active { color: var(--negro); }
+
+  /* LAYOUT */
+  .container { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+  .section { display: none; animation: fadeIn .35s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid rgba(201,146,42,.3); }
+  .tab-btn {
+    font-family: 'Cinzel', serif; font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
+    padding: 10px 20px; background: transparent; color: var(--crema-oscuro); border: none; cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s;
+  }
+  .tab-btn.active { color: var(--oro); border-bottom-color: var(--oro); }
+  .tab-content { display: none; padding-top: 28px; }
+  .tab-content.active { display: block; }
+
+  /* CARD */
+  .card {
+    background: rgba(42,14,63,.32); border: 1px solid rgba(201,146,42,.28);
+    padding: 34px; position: relative;
+  }
+  .card::before {
+    content: ''; position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid rgba(201,146,42,.1); pointer-events: none;
+  }
+
+  /* SETUP */
+  .setup-screen { text-align: center; padding: 10px 0 20px; }
+  .setup-title {
+    font-family: 'Cinzel', serif; font-size: clamp(1rem,2.5vw,1.3rem);
+    color: var(--oro-claro); margin-bottom: 8px;
+  }
+  .setup-sub { font-style: italic; color: var(--crema-oscuro); opacity: .65; font-size: .95rem; margin-bottom: 32px; }
+  .setup-label {
+    font-family: 'Cinzel', serif; font-size: .76rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--crema-oscuro); opacity: .7; margin-bottom: 14px;
+  }
+  .num-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 36px; }
+  .num-btn {
+    font-family: 'Cinzel', serif; font-size: .85rem; padding: 10px 18px;
+    border: 1px solid rgba(201,146,42,.4); background: transparent;
+    color: var(--crema); cursor: pointer; transition: all .2s; min-width: 54px;
+  }
+  .num-btn:hover, .num-btn.sel { background: var(--oro); color: var(--negro); border-color: var(--oro); }
+  .start-btn {
+    font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .18em; text-transform: uppercase;
+    padding: 15px 44px; background: var(--oro); color: var(--negro);
+    border: none; cursor: pointer; transition: background .2s;
+  }
+  .start-btn:hover { background: var(--oro-brillante); }
+
+  /* QUIZ HEADER */
+  .quiz-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 22px; flex-wrap: wrap; gap: 10px;
+  }
+  .quiz-badge {
+    font-family: 'Cinzel', serif; font-size: .7rem;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--oro); opacity: .85;
+  }
+  .score-display { font-family: 'Cinzel', serif; color: var(--oro-brillante); font-size: .85rem; }
+  .progress-bar { width: 100%; height: 3px; background: rgba(201,146,42,.18); margin-bottom: 26px; }
+  .progress-fill { height: 100%; background: var(--oro); transition: width .4s ease; }
+
+  .question-text {
+    font-family: 'Cinzel', serif; font-size: clamp(.95rem,2.3vw,1.2rem);
+    color: var(--blanco); text-align: center; margin-bottom: 10px; line-height: 1.5;
+  }
+  .question-hl {
+    color: var(--oro-brillante); font-size: clamp(1.1rem,3vw,1.5rem);
+    display: block; margin: 4px 0 18px;
+  }
+  .question-sub {
+    font-style: italic; color: var(--crema-oscuro); opacity: .65;
+    text-align: center; margin-bottom: 24px; font-size: .92rem;
+  }
+
+  /* OPTIONS: 4-grid */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  @media(max-width:520px){ .options-grid { grid-template-columns: 1fr; } }
+
+  /* OPTIONS: all-days column */
+  .days-grid { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+
+  .option-btn {
+    font-family: 'EB Garamond', serif; font-size: 1rem; padding: 12px 15px;
+    border: 1px solid rgba(201,146,42,.33); background: rgba(255,255,255,.03);
+    color: var(--crema); cursor: pointer; text-align: left; transition: all .2s; line-height: 1.3;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--oro); background: rgba(201,146,42,.13); color: var(--oro-claro);
+  }
+  .option-btn.correct { background: var(--verde-ok); border-color: #4caf50; color: var(--verde-txt); }
+  .option-btn.wrong   { background: var(--rojo-err); border-color: #e53935; color: var(--rojo-txt); }
+  .option-btn:disabled { cursor: default; }
+
+  .feedback {
+    text-align: center; font-family: 'Cinzel', serif;
+    font-size: .88rem; min-height: 24px; margin-bottom: 12px; letter-spacing: .1em;
+  }
+  .feedback.ok  { color: var(--verde-txt); }
+  .feedback.err { color: var(--rojo-txt); }
+
+  .next-btn, .restart-btn {
+    display: block; margin: 0 auto; font-family: 'Cinzel', serif; font-size: .78rem;
+    letter-spacing: .2em; text-transform: uppercase; padding: 13px 34px;
+    background: var(--oro); color: var(--negro); border: none; cursor: pointer; transition: background .2s;
+  }
+  .next-btn:hover, .restart-btn:hover { background: var(--oro-brillante); }
+
+  /* IMAGE */
+  .img-frame {
+    width: 100%; max-width: 400px; margin: 0 auto 22px;
+    border: 2px solid rgba(201,146,42,.35); aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.38); overflow: hidden;
+  }
+  .img-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-placeholder { text-align: center; padding: 20px; color: rgba(201,146,42,.4); }
+  .img-placeholder .ph-icon { font-size: 2.8rem; display: block; margin-bottom: 8px; }
+  .img-placeholder p { font-size: .78rem; font-family: 'Cinzel', serif; }
+
+  /* TEXT INPUT */
+  .text-input-wrap {
+    display: flex; gap: 10px; margin: 0 auto 16px;
+    max-width: 420px;
+  }
+  .text-input {
+    flex: 1; padding: 12px 15px; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(201,146,42,.38); color: var(--crema);
+    font-family: 'EB Garamond', serif; font-size: 1rem; outline: none;
+  }
+  .text-input:focus { border-color: var(--oro); }
+  .check-btn {
+    font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
+    padding: 12px 18px; background: transparent; color: var(--oro);
+    border: 1px solid var(--oro); cursor: pointer; transition: all .2s;
+  }
+  .check-btn:hover { background: var(--oro); color: var(--negro); }
+
+  /* RESULT */
+  .result-screen { text-align: center; padding: 16px 0; }
+  .big-score {
+    font-family: 'Cinzel Decorative', serif; font-size: clamp(3rem,8vw,5rem);
+    color: var(--oro-brillante); text-shadow: 0 0 60px rgba(240,192,96,.5);
+    margin: 18px 0 6px;
+  }
+  .result-msg {
+    font-family: 'Cinzel', serif; font-size: .95rem;
+    color: var(--crema-oscuro); letter-spacing: .1em; margin-bottom: 28px;
+  }
+
+  /* REFERENCE */
+  .day-group { margin-bottom: 26px; }
+  .day-label {
+    font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--oro); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+  }
+  .day-label::after { content:''; flex:1; height:1px; background:rgba(201,146,42,.22); }
+  .cofradia-list { display: flex; flex-direction: column; gap: 5px; }
+  .cofradia-item {
+    padding: 9px 15px; background: rgba(255,255,255,.03);
+    border-left: 2px solid rgba(201,146,42,.28); font-size: 1rem; color: var(--crema);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .dot { width:5px; height:5px; background:var(--oro); border-radius:50%; flex-shrink:0; }
+
+  /* TERM REF */
+  .term-ref-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap: 12px; }
+  .term-ref-card { border: 1px solid rgba(201,146,42,.22); background: rgba(255,255,255,.03); padding: 14px; }
+  .term-ref-name { font-family: 'Cinzel', serif; font-size: .85rem; color: var(--oro-claro); margin-bottom: 5px; }
+  .term-ref-desc { font-size: .88rem; font-style: italic; opacity: .65; line-height: 1.4; }
+
+  .hidden { display: none !important; }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,.92);
+    align-items: center; justify-content: center;
+    cursor: zoom-out;
+    animation: lbIn .2s ease;
+  }
+  .lightbox.open { display: flex; }
+  @keyframes lbIn { from{opacity:0} to{opacity:1} }
+  .lightbox img {
+    max-width: 92vw; max-height: 88vh;
+    object-fit: contain;
+    border: 1px solid rgba(201,146,42,.4);
+    box-shadow: 0 0 80px rgba(0,0,0,.8);
+  }
+  .lb-close {
+    position: fixed; top: 18px; right: 22px;
+    font-size: 2rem; color: var(--oro-claro);
+    cursor: pointer; line-height: 1;
+    font-family: 'Cinzel', serif;
+    opacity: .8; transition: opacity .2s;
+    z-index: 1001;
+  }
+  .lb-close:hover { opacity: 1; }
+  .lb-hint {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-family: 'Cinzel', serif; font-size: .72rem; letter-spacing: .15em;
+    color: var(--crema-oscuro); opacity: .4; text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  /* make img-frame images feel clickable */
+  .img-frame img {
+    cursor: zoom-in; transition: filter .2s;
+  }
+  .img-frame img:hover { filter: brightness(1.1); }
+  .img-frame::after {
+    content: '🔍'; position: absolute; bottom: 8px; right: 10px;
+    font-size: 1.1rem; opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .img-frame { position: relative; }
+  .img-frame:has(img):hover::after { opacity: .7; }
+</style>
+
+</head>
+<body>
+
+<!-- LIGHTBOX OVERLAY -->
+<div class="lightbox" id="lightbox" onclick="closeLB(event)">
+  <span class="lb-close" onclick="closeLightbox()">✕</span>
+  <img id="lb-img" src="" alt="" onclick="closeLightbox()">
+  <span class="lb-hint">Clic o Esc para cerrar</span>
+</div>
+
+<div class="header">
+  <div class="candles">
+    <span class="candle">🕯️</span>
+    <span class="candle">🕯️</span>
+    <span class="candle">🕯️</span>
+  </div>
+  <h1>Semana Santa<br>de Cádiz</h1>
+  <p>Guía de estudio y práctica</p>
+  <div class="ornament">✦</div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('s1')" id="btn-s1"><span>📅 Días y Cofradías</span></button>
+  <button class="nav-btn"        onclick="showSection('s2')" id="btn-s2"><span>🎭 Identificar Pasos</span></button>
+  <button class="nav-btn"        onclick="showSection('s3')" id="btn-s3"><span>📖 Terminología</span></button>
+</nav>
+
+<main class="container">
+
+  <!-- S1 -->
+  <section class="section active" id="s1">
+    <div class="tabs">
+      <button class="tab-btn active" id="s1-tab-ref" onclick="switchTab('s1','ref')">Consultar</button>
+      <button class="tab-btn"        id="s1-tab-qz"  onclick="switchTab('s1','qz')">Practicar</button>
+    </div>
+    <div class="tab-content active" id="s1-ref"><div id="dias-ref-table"></div></div>
+    <div class="tab-content"        id="s1-qz"><div class="card" id="dias-quiz-card"></div></div>
+  </section>
+
+  <!-- S2 -->
+  <section class="section" id="s2">
+    <div class="tabs">
+      <button class="tab-btn active" id="s2-tab-ref" onclick="switchTab('s2','ref')">Consultar</button>
+      <button class="tab-btn"        id="s2-tab-qz"  onclick="switchTab('s2','qz')">Practicar</button>
+    </div>
+    <div class="tab-content active" id="s2-ref"><div id="pasos-ref-table"></div></div>
+    <div class="tab-content"        id="s2-qz"><div class="card" id="pasos-quiz-card"></div></div>
+  </section>
+
+  <!-- S3 -->
+  <section class="section" id="s3">
+    <div class="tabs">
+      <button class="tab-btn active" id="s3-tab-ref" onclick="switchTab('s3','ref')">Consultar</button>
+      <button class="tab-btn"        id="s3-tab-qz"  onclick="switchTab('s3','qz')">Practicar</button>
+    </div>
+    <div class="tab-content active" id="s3-ref"><div id="term-ref-table"></div></div>
+    <div class="tab-content"        id="s3-qz"><div class="card" id="term-quiz-card"></div></div>
+  </section>
+
+</main>
+
+<script>
+// ══════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════
+
+const DIAS_ORDEN = [
+  "Domingo de Ramos",
+  "Lunes Santo",
+  "Martes Santo",
+  "Miércoles Santo",
+  "Jueves Santo",
+  "Viernes Santo (Madrugada)",
+  "Viernes Santo",
+  "Sábado Santo (Madrugada)",
+  "Sábado Santo",
+  "Domingo de Resurrección"
+];
+
+const COFRADIAS = [
+      // DOMINGO DE RAMOS
+      { nombre: "La Borriquita", dia: "Domingo de Ramos", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F2.bp.blogspot.com%2F-giDgH_ecD1g%2FUVApkA9KGAI%2FAAAAAAAAE0Y%2F2DbQrhbAbW8%2Fs1600%2FP3245863.JPG&f=1&nofb=1&ipt=5d867e9f3907ffe58eb0cd73858c1186901f8fb5584126cd00ac9c5ae377c959" },
+      { nombre: "Las Penas", dia: "Domingo de Ramos", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F03%2F28%2Fsemana_santa%2FJesus-Penas-Sagasta-Hospital-Mujeres_1778832687_180157930_667x375.jpg&f=1&nofb=1&ipt=10df893527a214a765ce1b1c5b01c56f1ec3feca87d901e23bcb156754b7c29b" },
+      { nombre: "El Despojado", dia: "Domingo de Ramos", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs3.abcstatics.com%2Flavozdigital%2Fwww%2Fmultimedia%2Fandalucia%2F2023%2F04%2F02%2Fdespojado-cadiz(2).jpg&f=1&nofb=1&ipt=4badbf331c4792581c4ce52388128e8f9e6aa3f57cad3ec2cfc32e8760f321fa" },
+      { nombre: "Sagrada Cena", dia: "Domingo de Ramos", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F02%2Fsemana_santa%2FSagrada-Cena-Cadiz-Semana-Santa_1780335428_180708703_1024x682.jpg&f=1&nofb=1&ipt=2e13111b5ec7091d61422bab531409b4f702d4bbe2fff6cc1fad9a4938dcb2b9" },
+      { nombre: "Humildad y Paciencia", dia: "Domingo de Ramos", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs3.abcstatics.com%2Flavozdigital%2Fwww%2Fmultimedia%2Fandalucia%2F2023%2F04%2F02%2Fhumildad-paciencia-cadiz(13).jpg&f=1&nofb=1&ipt=d1f3f07a30cbb941409c22ee11603f7f04eefcb1b7e7be28ed9cfd5fb6e85316" },
+
+      // LUNES SANTO
+      { nombre: "Nazareno del Amor", dia: "Lunes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2F4.bp.blogspot.com%2F-JZI62r0V3Tw%2FWQYxhor2wHI%2FAAAAAAAAYGE%2FOVHuC3LpICwnfe_1kageZk6bsiLBebRawCLcB%2Fs1600%2Fmaxresdefault.jpg&f=1&nofb=1&ipt=8870672061813fe9f6c5e6f9bc6fb495a3b40c5e79b1b41f10e663842b5db54e" },
+      { nombre: "La Palma", dia: "Lunes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2022%2F04%2F13%2Fsemana_santa%2FImagenes-Palma-Semana-Santa-Cadiz_1674143011_155915360_1200x675.jpg&f=1&nofb=1&ipt=2881b5aeb627cc72e20e24c29a5ddb068a20d699287bd0b550015bef2664c651" },
+      { nombre: "Prendimiento", dia: "Lunes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2024%2F03%2F25%2Fsemana_santa%2FPrendimiento-Lunes-Santo-Semana-Santa_1887722084_207468354_1024x683.jpg&f=1&nofb=1&ipt=db344e083c13b97fa920a7778aa0394967517fa90ae11250a2bcd98134317e44" },
+      { nombre: "Vera Cruz", dia: "Lunes Santo", imagen: "https://static.grupojoly.com/clip/f8c40d26-d820-4a96-a86a-d9e682ecd40f_source-aspect-ratio_1600w_0.webp" },
+
+      // MARTES SANTO
+      { nombre: "Sanidad", dia: "Martes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.portaldecadiz.com%2Fimages%2Figallery%2Fresized%2Fsanidad-martes-santo--3357%2Fsanidad-2024-023-1200-1200-80-wm-center_bottom-100-portaldecadizpng.jpg&f=1&nofb=1&ipt=ad3301b2ba77d6fdbfc7b77d2ff8f13eacabd8f182d507e25a50d58ddef3dc40" },
+      { nombre: "La Piedad", dia: "Martes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F03%2F28%2Fsemana_santa%2FSantisimo-Cristo-Piedad_1778833027_180174408_667x375.jpg&f=1&nofb=1&ipt=fec50cb70023dfc719ac0c8f678fcf25cf0448f8123d045148f0c8233a72e549" },
+      { nombre: "El Caído", dia: "Martes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2022%2F04%2F12%2Fsemana_santa%2Fimagenes-Caido-Semana-Santa-Cadiz_1673844530_155851553_1200x675.jpg&f=1&nofb=1&ipt=47450b577b94b4e62019825a86ee96798899421d50ee49955acc6fe131ee0405" },
+      { nombre: "Columna", dia: "Martes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F04%2Fsemana_santa%2Fimagenes-Columna-Semana-Santa-Cadiz_1780933772_181020094_1024x683.jpg&f=1&nofb=1&ipt=0ce0f32c4e9507bf8768bb025bb15431426b87149358574544c0923d7a207d93" },
+      { nombre: "Ecce Homo", dia: "Martes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2022%2F04%2F12%2Fsemana_santa%2Fimagenes-Ecce-Homo-Semana-Santa-Cadiz_1673844393_155844847_1024x683.jpg&f=1&nofb=1&ipt=3a44d74edf97835398a98bf81492cc79e4b02ea7d6d455b9fb79ce95c63bc121" },
+
+      // MIÉRCOLES SANTO
+      { nombre: "Sentencia", dia: "Miércoles Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F03%2Fcadizfornia%2FImagen-Sentencia-Semana-Santa-Cadiz_1780632182_180763931_1200x675.jpg&f=1&nofb=1&ipt=89a3dbefc82e50ce24b7dd5717928a42dcb2e1ff72ae5cf4505a7977ae71813a" },
+      { nombre: "Cigarreras", dia: "Miércoles Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2022%2F04%2F13%2Fsemana_santa%2Fimagenes-Cigarreras-Semana-Santa-Cadiz_1674144076_155968912_1024x640.jpg&f=1&nofb=1&ipt=befd597f70ac0705883c562fb6f325dd0dd2c49bdc9996687be6205d574a7383" },
+      { nombre: "Luz y Agua", dia: "Miércoles Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.grupojoly.com%2Fclip%2F36b73417-be12-4ce1-b227-8c5b9b234d75_facebook-aspect-ratio_default_0.jpg&f=1&nofb=1&ipt=788c2949e80b73cce5fca65befe2b23192b681ee62ac7d85002b88ea357ac8e5" },
+      { nombre: "El Caminito", dia: "Miércoles Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.portaldecadiz.com%2Fimages%2Figallery%2Fresized%2Fcaminito-miercoles-santo--3364%2Fcaminito2024-039-1200-1200-80-wm-center_bottom-100-portaldecadizpng.jpg&f=1&nofb=1&ipt=c0383a96e64c7c122aeaf4a51d663b3c92791c798fb61a9687e174f09b381660" },
+
+      // JUEVES SANTO
+      { nombre: "Afligidos", dia: "Jueves Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F06%2Fsemana_santa%2FAfligidos-Semana-Santa-Cadiz_1781533569_181322155_1024x576.jpg&f=1&nofb=1&ipt=e220f34bd3cb3c667eac329f4c263ae3d4dda1ef801e3ee69af60c5eba1e123d" },
+      { nombre: "Oración en el Huerto", dia: "Jueves Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fstatic.grupojoly.com%2Fclip%2F208fd652-3755-4610-8553-d4d61c32844c_source-aspect-ratio_1600w_0.jpg&f=1&nofb=1&ipt=20220284bcca4eb9c0ba51d1507851a02f6d727c0c2a5e9d5029e0daba8faf96" },
+      { nombre: "El Nazareno de Santa María", dia: "Jueves Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F05%2Fsemana_santa%2FNazareno-Santa-Maria-recibe-petalada_1781232240_181089238_667x375.jpg&f=1&nofb=1&ipt=deab0b58f2b749fa0c34332722351f9752bbcc6531383ab0caec63b71219520d" },
+      { nombre: "Medinaceli", dia: "Jueves Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F06%2Fsemana_santa%2FImagenes-Medinaceli-Semana-Santa-Cadiz_1781534438_181392084_667x375.jpg&f=1&nofb=1&ipt=80ce39b921622a8fbb8cad48b026bef10dd4f50cd18b59c725340296ffc4a48f" },
+
+      // VIERNES SANTO MADRUGADA
+      { nombre: "El Perdón", dia: "Viernes Santo (Madrugada)", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2022%2F04%2F15%2Fsemana_santa%2Fimagenes-Perdon-Semana-Santa-Cadiz_1674743416_156218847_667x375.jpg&f=1&nofb=1&ipt=59a25677ba99e7e959d2004eeb66792293b90643d3fec20956e2ab5d1dcca15c" },
+
+      // VIERNES SANTO
+      { nombre: "Siete Palabras", dia: "Viernes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs3.abcstatics.com%2Flavozdigital%2Fwww%2Fmultimedia%2Fandalucia%2F2023%2F04%2F07%2F7-palabras-merced(23).jpg&f=1&nofb=1&ipt=6dfbf37e1f6ae6f87f31df1e28e6cfcfb30c6ddd6e95c8d8efd804b35bfee7f9" },
+      { nombre: "Expiración", dia: "Viernes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.portaldecadiz.com%2Fimages%2Figallery%2Fresized%2Fexpiracion-viernes-santo--3368%2Fexpiracion2024-023-1200-1200-80-wm-center_bottom-100-portaldecadizpng.jpg&f=1&nofb=1&ipt=dc57030cada679c0f1809a55225ea2fbbd332c3d636df9744251e1eb6110bd17" },
+      { nombre: "Descendimiento", dia: "Viernes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F07%2Fsemana_santa%2Fimagenes-Descendimiento-Semana-Santa-Cadiz_1781834118_181503292_1024x681.jpg&f=1&nofb=1&ipt=de8d7c0153b2b5b4b62242d167e5d58c0024163d14cdcc04cf37abbd463c6d19" },
+      { nombre: "Buena Muerte", dia: "Viernes Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F08%2Fsemana_santa%2FBuena-Muerte-Semana-Santa-Cadiz_1782132116_181573886_1024x682.jpg&f=1&nofb=1&ipt=0315d14cd215aa7e217170d33dce80e8639a58c2a5ede264969efd31f77b6631" },
+
+      // SÁBADO SANTO MADRUGADA
+      { nombre: "Ecce Mater", dia: "Sábado Santo (Madrugada)", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2018%2F03%2F23%2Fsemana_santa%2FEcce-MaterEcce-Mater-Tua-Catedral_1229587693_105240855_1200x675.jpg&f=1&nofb=1&ipt=5952820f441450471c0637e475242b39b8fba2a30392065fb636a524366b603a" },
+
+      // SÁBADO SANTO
+      { nombre: "Santo Entierro", dia: "Sábado Santo", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.diariodecadiz.es%2F2023%2F04%2F08%2Fsemana_santa%2FSanto-Entierro-Semana-Santa-Cadiz_1782132847_181609656_1024x576.jpg&f=1&nofb=1&ipt=3983a6344a682466cb68b2b755fb8b8b503274e3763f361ff0298c344bcfcb6b" },
+
+      // DOMINGO DE RESURRECCIÓN
+      { nombre: "El Resucitado", dia: "Domingo de Resurrección", imagen: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fs2.abcstatics.com%2Fmedia%2FMM%2F2022%2F04%2F17%2Fv%2Fresucitado-ab(1).jpg&f=1&nofb=1&ipt=e371d8237da9b33f2cedde9db1b13e17e66b72871463b702f50297dea434d1e8" },
+    ];
+
+const TERMINOLOGIA = [
+  { termino:"Paso",              desc:"Plataforma artística sobre la que se traslada una imagen en procesión.", imagen:null },
+  { termino:"Manigueta",         desc:"Empuñadura lateral del paso usada por los portadores externos.", imagen:null },
+  { termino:"Palio",             desc:"Estructura de tela bordada que actua de techo en muchos pasos de Virgen, sostenida por varales.", imagen:null },
+  { termino:"Faldón",            desc:"Tela que cubre el paso hasta el suelo, ocultando a los cargadores.", imagen:null },
+  { termino:"Varal",             desc:"Barra metálica que sostiene el palio de la Virgen.", imagen:null },
+  { termino:"Trabajadera",       desc:"Travesaño de madera interior sobre el que apoyan los cargadores.", imagen:null },
+  { termino:"Caracola",          desc:"Candelabro de cola que decora la parte trasera del paso de Virgen.", imagen:null },
+  { termino:"Ánfora",            desc:"Jarra donde se guardan las flores del paso.", imagen:null },
+  { termino:"Simpecado",         desc:"Estandarte de una hermandad que encabeza la procesión.", imagen:null },
+  { termino:"Cruz de Guía",      desc:"Cruz que abre la comitiva procesional de una cofradía.", imagen:null },
+  { termino:"Misterio",          desc:"Paso que representa una escena de la Pasión con varias figuras.", imagen:null },
+  { termino:"Cargador",          desc:"Persona que porta el paso bajo el cajillo, sin ser vista por el público.", imagen:null },
+  { termino:"Maniguetero (o manigueta)",          desc:"Cargador que lleva la manigueta.", imagen:null },
+  { termino:"Capataz",           desc:"Persona que dirige a los cargadores mediante golpes en la trabajadera.", imagen:null },
+  { termino:"Acólito",           desc:"Monaguillo encargado de portar cirial o incensario delante del paso.", imagen:null },
+  { termino:"Penitente",         desc:"Cofrade que desfila con túnica y capirote o gato.", imagen:null },
+  { termino:"Capirote",          desc:"Cono de cartón o tela que cubre la cabeza de los penitentes, con dos orificios para los ojos.", imagen:null },
+  { termino:"Gato",              desc:"Capucha de tela que cubre la cabeza de los penitentes, alternativa al capirote.", imagen:null },
+  { termino:"Cíngulo",           desc:"Cinturón que se ciñe a la túnica de los penitentes.", imagen:null },
+  { termino:"Cirial",            desc:"Candeleros altos que portan los acólitos delante del paso.", imagen:null },
+  { termino:"Incensario",        desc:"Recipiente colgante que contiene incienso, oscilado por los acólitos para perfumar el ambiente.", imagen:null },
+  { termino:"Cirio",             desc:"Vela de cera, larga y gruesa que portan los nazarenos en la cofradía.", imagen:null },
+  { termino:"Saeta",             desc:"Cante flamenco popular dedicado a los pasos durante la procesión.", imagen:null },
+];
+
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
+}
+
+function switchTab(sec, tab) {
+  ['ref','qz'].forEach(t => {
+    document.getElementById(sec+'-tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById(sec+'-'+t).classList.toggle('active', t===tab);
+  });
+  if (tab === 'qz') {
+    if (sec === 's1') renderDiasSetup();
+    if (sec === 's2') renderPasosSetup();
+    if (sec === 's3') renderTermSetup();
+  }
+}
+
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+
+const shuffle = arr => [...arr].sort(() => Math.random() - .5);
+const pick    = (arr, n) => shuffle(arr).slice(0, n);
+const escQ    = s => s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+const norm    = s => s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'');
+
+function imgBlock(item, icon) {
+  if (item.imagen) return `<img src="${item.imagen}" alt="" onclick="openLightbox(this.src)" onerror="this.parentElement.innerHTML=phHTML('${icon}','Imagen no disponible')">`;
+  return `<div class="img-placeholder"><span class="ph-icon">${icon}</span><p>Imagen pendiente</p><p style="opacity:.45;font-size:.7rem;margin-top:4px">Añade la URL en COFRADIAS[…].imagen</p></div>`;
+}
+function openLightbox(src) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeLB(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+function phHTML(icon, lbl) {
+  return `<div class='img-placeholder'><span class='ph-icon'>${icon}</span><p>${lbl}</p></div>`;
+}
+
+function numPickerHTML(total, gridId) {
+  const steps = [5,10,15,20,25,30].filter(n => n < total);
+  steps.push(total);
+  return `
+    <p class="setup-label">Número de preguntas</p>
+    <div class="num-grid" id="${gridId}">
+      ${steps.map(n => `<button class="num-btn${n===total?' sel':''}" data-n="${n}"
+        onclick="pickNum(this,'${gridId}')">${n===total?'Todas ('+total+')':n}</button>`).join('')}
+    </div>`;
+}
+function pickNum(btn, gridId) {
+  document.querySelectorAll('#'+gridId+' .num-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+function getPickedN(gridId) {
+  return +document.querySelector('#'+gridId+' .num-btn.sel').dataset.n;
+}
+
+let _restartFn = null;
+function _restart() { if (_restartFn) _restartFn(); }
+
+function renderResult(card, score, total, onRestart) {
+  _restartFn = onRestart;
+  const pct = Math.round(score/total*100);
+  const msg = pct===100?'¡Perfección absoluta! 🌟'
+            : pct>=80 ?'Excelente, eres un experto 🕯️'
+            : pct>=60 ?'Muy bien, sigue practicando'
+            : pct>=40 ?'Puedes mejorar, ¡ánimo!'
+                      :'Repasa la guía y vuelve a intentarlo';
+  card.innerHTML = `
+    <div class="result-screen">
+      <div class="ornament">✦</div>
+      <p style="font-family:'Cinzel',serif;letter-spacing:.15em;font-size:.76rem;opacity:.5;text-transform:uppercase">Resultado final</p>
+      <div class="big-score">${score}<span style="font-size:.42em;opacity:.5"> / ${total}</span></div>
+      <p class="result-msg">${msg}</p>
+      <button class="restart-btn" onclick="_restart()">↩ Volver a empezar</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//  BUILD REFERENCE TABLES (on load)
+// ══════════════════════════════════════════
+(function buildRefs() {
+  // S1 reference
+  const byDay = {};
+  DIAS_ORDEN.forEach(d => byDay[d] = []);
+  COFRADIAS.forEach(c => byDay[c.dia] && byDay[c.dia].push(c.nombre));
+  let html1 = '';
+  DIAS_ORDEN.forEach(dia => {
+    const list = byDay[dia];
+    if (!list.length) return;
+    html1 += `<div class="day-group"><div class="day-label">${dia}</div><div class="cofradia-list">
+      ${list.map(c=>`<div class="cofradia-item"><span class="dot"></span>${c}</div>`).join('')}
+    </div></div>`;
+  });
+  document.getElementById('dias-ref-table').innerHTML = html1;
+
+  // S2 reference
+  let html2 = '';
+  DIAS_ORDEN.forEach(dia => {
+    const list = COFRADIAS.filter(c => c.dia===dia);
+    if (!list.length) return;
+    html2 += `<div class="day-group"><div class="day-label">${dia}</div><div class="cofradia-list">`;
+    list.forEach(c => {
+      html2 += `<div class="cofradia-item" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <span style="font-family:'Cinzel',serif;font-size:.85rem;color:var(--oro-claro)">${c.nombre}</span>
+        ${c.imagen?`<img src="${c.imagen}" onclick="openLightbox(this.src)" style="max-height:80px;border:1px solid rgba(201,146,42,.3);cursor:zoom-in" alt="">`:
+          `<span style="font-size:.75rem;opacity:.4;font-style:italic">imagen pendiente</span>`}
+      </div>`;
+    });
+    html2 += '</div></div>';
+  });
+  document.getElementById('pasos-ref-table').innerHTML = html2;
+
+  // S3 reference
+  let html3 = '<div class="term-ref-grid">';
+  TERMINOLOGIA.forEach(t => {
+    html3 += `<div class="term-ref-card">
+      ${t.imagen?`<img src="${t.imagen}" onclick="openLightbox(this.src)" style="width:100%;max-height:90px;object-fit:cover;margin-bottom:8px;border:1px solid rgba(201,146,42,.2);cursor:zoom-in" alt="">`:``}
+      <div class="term-ref-name">${t.termino}</div>
+      <div class="term-ref-desc">${t.desc}</div>
+    </div>`;
+  });
+  html3 += '</div>';
+  document.getElementById('term-ref-table').innerHTML = html3;
+})();
+
+// ══════════════════════════════════════════
+//  S1 — QUIZ DÍAS (all options shown)
+// ══════════════════════════════════════════
+let D = {};
+
+function renderDiasSetup() {
+  document.getElementById('dias-quiz-card').innerHTML = `
+    <div class="setup-screen">
+      <p class="setup-title">📅 Días y Cofradías</p>
+      <p class="setup-sub">¿Qué día de la Semana Santa sale cada cofradía?</p>
+      ${numPickerHTML(COFRADIAS.length, 'num-dias')}
+      <button class="start-btn" onclick="startDias()">Comenzar el examen</button>
+    </div>`;
+}
+
+function startDias() {
+  const n = getPickedN('num-dias');
+  D = { q: shuffle(COFRADIAS).slice(0,n), i:0, score:0, done:false };
+  renderDiasQ();
+}
+
+function renderDiasQ() {
+  const card = document.getElementById('dias-quiz-card');
+  if (D.i >= D.q.length) { renderResult(card, D.score, D.q.length, renderDiasSetup); return; }
+  const q = D.q[D.i];
+  const pct = Math.round(D.i/D.q.length*100);
+  card.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-badge">📅 Días · ${D.i+1} / ${D.q.length}</span>
+      <span class="score-display">✦ ${D.score} correctas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="question-text">Qué día sale…<span class="question-hl">${q.nombre}</span></p>
+    <div class="days-grid" id="opts-dias">
+      ${DIAS_ORDEN.map(dia=>`<button class="option-btn" onclick="ansD(this,'${escQ(dia)}','${escQ(q.dia)}')">${dia}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb-dias"></div>
+    <button class="next-btn hidden" id="next-dias" onclick="nextDias()">Siguiente →</button>`;
+}
+
+function ansD(btn, chosen, correct) {
+  if (D.done) return; D.done = true;
+  if (chosen===correct) D.score++;
+  document.querySelectorAll('#opts-dias .option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim()===correct) b.classList.add('correct');
+    if (b.textContent.trim()===chosen && chosen!==correct) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('fb-dias');
+  fb.textContent = chosen===correct ? '✦ ¡Correcto!' : `✗ ¡Incorrecto!`;
+  fb.className = 'feedback '+(chosen===correct?'ok':'err');
+  document.getElementById('next-dias').classList.remove('hidden');
+}
+function nextDias() { D.i++; D.done=false; renderDiasQ(); }
+
+// ══════════════════════════════════════════
+//  S2 — QUIZ PASOS (4 options)
+// ══════════════════════════════════════════
+let P = {};
+
+function renderPasosSetup() {
+  document.getElementById('pasos-quiz-card').innerHTML = `
+    <div class="setup-screen">
+      <p class="setup-title">🎭 Identificar Pasos</p>
+      <p class="setup-sub">Dado el paso o misterio, ¿a qué cofradía pertenece?</p>
+      ${numPickerHTML(COFRADIAS.length, 'num-pasos')}
+      <button class="start-btn" onclick="startPasos()">Comenzar el examen</button>
+    </div>`;
+}
+
+function startPasos() {
+  const n = getPickedN('num-pasos');
+  P = { q: shuffle(COFRADIAS).slice(0,n), i:0, score:0, done:false };
+  renderPasosQ();
+}
+
+function renderPasosQ() {
+  const card = document.getElementById('pasos-quiz-card');
+  if (P.i >= P.q.length) { renderResult(card, P.score, P.q.length, renderPasosSetup); return; }
+  const q = P.q[P.i];
+  const opts = shuffle([q.nombre, ...pick(COFRADIAS.map(c=>c.nombre).filter(n=>n!==q.nombre), 3)]);
+  const pct = Math.round(P.i/P.q.length*100);
+  card.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-badge">🎭 Pasos · ${P.i+1} / ${P.q.length}</span>
+      <span class="score-display">✦ ${P.score} correctas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="question-text">¿A qué cofradía pertenece este paso?</p>
+    <div class="img-frame">${imgBlock(q,'🎭')}</div>
+    <div class="options-grid" id="opts-pasos">
+      ${opts.map(o=>`<button class="option-btn" onclick="ansP(this,'${escQ(o)}','${escQ(q.nombre)}')">${o}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb-pasos"></div>
+    <button class="next-btn hidden" id="next-pasos" onclick="nextPasos()">Siguiente →</button>`;
+}
+
+function ansP(btn, chosen, correct) {
+  if (P.done) return; P.done = true;
+  if (chosen===correct) P.score++;
+  document.querySelectorAll('#opts-pasos .option-btn').forEach(b => {
+    b.disabled=true;
+    if (b.textContent.trim()===correct) b.classList.add('correct');
+    if (b.textContent.trim()===chosen && chosen!==correct) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('fb-pasos');
+  fb.textContent = chosen===correct ? '✦ ¡Correcto!' : `✗ ¡Incorrecto!`;
+  fb.className = 'feedback '+(chosen===correct?'ok':'err');
+  document.getElementById('next-pasos').classList.remove('hidden');
+}
+function nextPasos() { P.i++; P.done=false; renderPasosQ(); }
+
+// ══════════════════════════════════════════
+//  S3 — QUIZ TERMINOLOGÍA (free text)
+// ══════════════════════════════════════════
+let T = {};
+
+function renderTermSetup() {
+  document.getElementById('term-quiz-card').innerHTML = `
+    <div class="setup-screen">
+      <p class="setup-title">📖 Terminología</p>
+      <p class="setup-sub">Observa la imagen y la descripción — ¿cómo se llama este elemento?</p>
+      ${numPickerHTML(TERMINOLOGIA.length, 'num-term')}
+      <button class="start-btn" onclick="startTerm()">Comenzar el examen</button>
+    </div>`;
+}
+
+function startTerm() {
+  const n = getPickedN('num-term');
+  T = { q: shuffle(TERMINOLOGIA).slice(0,n), i:0, score:0, done:false };
+  renderTermQ();
+}
+
+function renderTermQ() {
+  const card = document.getElementById('term-quiz-card');
+  if (T.i >= T.q.length) { renderResult(card, T.score, T.q.length, renderTermSetup); return; }
+  const q = T.q[T.i];
+  const pct = Math.round(T.i/T.q.length*100);
+  card.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-badge">📖 Terminología · ${T.i+1} / ${T.q.length}</span>
+      <span class="score-display">✦ ${T.score} correctas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="question-text">¿Cómo se llama este elemento?</p>
+    <div class="img-frame">${imgBlock(q,'📖')}</div>
+    <p class="question-sub">${q.desc}</p>
+    <div class="text-input-wrap">
+      <input class="text-input" id="term-input" placeholder="Escribe el término…"
+        onkeydown="if(event.key==='Enter')chkTerm()">
+      <button class="check-btn" onclick="chkTerm()">Comprobar</button>
+    </div>
+    <div class="feedback" id="fb-term"></div>
+    <button class="next-btn hidden" id="next-term" onclick="nextTerm()">Siguiente →</button>`;
+  document.getElementById('term-input').focus();
+}
+
+function chkTerm() {
+  if (T.done) return;
+  const inp = document.getElementById('term-input');
+  if (!inp.value.trim()) return;
+  T.done = true;
+  const q = T.q[T.i];
+  const c = norm(q.termino), g = norm(inp.value);
+  const ok = g===c || (c.includes(g) && g.length>3);
+  if (ok) T.score++;
+  inp.disabled = true;
+  const fb = document.getElementById('fb-term');
+  fb.textContent = ok ? `✦ ¡Correcto! → ${q.termino}` : `✗ ¡Incorrecto! → ${q.termino}`;
+  fb.className = 'feedback '+(ok?'ok':'err');
+  document.getElementById('next-term').classList.remove('hidden');
+}
+function nextTerm() { T.i++; T.done=false; renderTermQ(); }
+</script>
+</body>
+</html>
