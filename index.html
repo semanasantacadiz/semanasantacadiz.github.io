@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semana Santa de Cádiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --negro: #0a0804;
+    --morado: #2a0e3f;
+    --oro: #c9922a;
+    --oro-claro: #f0c060;
+    --oro-brillante: #ffe08a;
+    --crema: #f5ead8;
+    --crema-oscuro: #e8d5b0;
+    --blanco: #fdf6ec;
+    --verde-ok: rgba(34,90,34,0.55);
+    --verde-txt: #a5d6a7;
+    --rojo-err: rgba(90,20,20,0.55);
+    --rojo-txt: #ef9a9a;
+  }
+  body {
+    background: var(--negro); color: var(--crema);
+    font-family: 'EB Garamond', serif; min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(42,14,63,.8) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(139,26,26,.35) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header { text-align: center; padding: 44px 20px 28px; }
+  .header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.4rem,4vw,2.5rem);
+    color: var(--oro-claro);
+    text-shadow: 0 0 40px rgba(201,146,42,.45);
+    line-height: 1.3;
+  }
+  .header p {
+    font-family: 'Cinzel', serif; color: var(--crema-oscuro); opacity: .65;
+    font-size: .85rem; letter-spacing: .25em; text-transform: uppercase; margin-top: 10px;
+  }
+  .ornament {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin: 14px auto; color: var(--oro); max-width: 360px;
+  }
+  .ornament::before, .ornament::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--oro), transparent);
+  }
+  .candles { display: flex; justify-content: center; gap: 56px; margin-bottom: 8px; }
+  .candle { font-size: 1.7rem; animation: flicker 2s infinite alternate; }
+  .candle:nth-child(2) { animation-delay: .7s; }
+  .candle:nth-child(3) { animation-delay: 1.3s; }
+  @keyframes flicker { 0%{opacity:.9;transform:scale(1)} 100%{opacity:.55;transform:scale(.94)} }
+
+  /* NAV */
+  .nav { display: flex; justify-content: center; gap: 10px; padding: 0 20px 36px; flex-wrap: wrap; }
+  .nav-btn {
+    font-family: 'Cinzel', serif; font-size: .76rem; letter-spacing: .15em; text-transform: uppercase;
+    padding: 11px 22px; border: 1px solid var(--oro); background: transparent; color: var(--oro-claro);
+    cursor: pointer; transition: all .3s; position: relative; overflow: hidden;
+  }
+  .nav-btn::before {
+    content: ''; position: absolute; inset: 0; background: var(--oro);
+    transform: scaleX(0); transform-origin: left; transition: transform .3s; z-index: 0;
+  }
+  .nav-btn span { position: relative; z-index: 1; }
+  .nav-btn:hover::before, .nav-btn.active::before { transform: scaleX(1); }
+  .nav-btn:hover, .nav-btn.active { color: var(--negro); }
+
+  /* LAYOUT */
+  .container { max-width: 880px; margin: 0 auto; padding: 0 20px 80px; }
+  .section { display: none; animation: fadeIn .35s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid rgba(201,146,42,.3); }
+  .tab-btn {
+    font-family: 'Cinzel', serif; font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
+    padding: 10px 20px; background: transparent; color: var(--crema-oscuro); border: none; cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s;
+  }
+  .tab-btn.active { color: var(--oro); border-bottom-color: var(--oro); }
+  .tab-content { display: none; padding-top: 28px; }
+  .tab-content.active { display: block; }
+
+  /* CARD */
+  .card {
+    background: rgba(42,14,63,.32); border: 1px solid rgba(201,146,42,.28);
+    padding: 34px; position: relative;
+  }
+  .card::before {
+    content: ''; position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid rgba(201,146,42,.1); pointer-events: none;
+  }
+
+  /* SETUP */
+  .setup-screen { text-align: center; padding: 10px 0 20px; }
+  .setup-title {
+    font-family: 'Cinzel', serif; font-size: clamp(1rem,2.5vw,1.3rem);
+    color: var(--oro-claro); margin-bottom: 8px;
+  }
+  .setup-sub { font-style: italic; color: var(--crema-oscuro); opacity: .65; font-size: .95rem; margin-bottom: 32px; }
+  .setup-label {
+    font-family: 'Cinzel', serif; font-size: .76rem; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--crema-oscuro); opacity: .7; margin-bottom: 14px;
+  }
+  .num-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 36px; }
+  .num-btn {
+    font-family: 'Cinzel', serif; font-size: .85rem; padding: 10px 18px;
+    border: 1px solid rgba(201,146,42,.4); background: transparent;
+    color: var(--crema); cursor: pointer; transition: all .2s; min-width: 54px;
+  }
+  .num-btn:hover, .num-btn.sel { background: var(--oro); color: var(--negro); border-color: var(--oro); }
+  .start-btn {
+    font-family: 'Cinzel', serif; font-size: .82rem; letter-spacing: .18em; text-transform: uppercase;
+    padding: 15px 44px; background: var(--oro); color: var(--negro);
+    border: none; cursor: pointer; transition: background .2s;
+  }
+  .start-btn:hover { background: var(--oro-brillante); }
+
+  /* QUIZ HEADER */
+  .quiz-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 22px; flex-wrap: wrap; gap: 10px;
+  }
+  .quiz-badge {
+    font-family: 'Cinzel', serif; font-size: .7rem;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--oro); opacity: .85;
+  }
+  .score-display { font-family: 'Cinzel', serif; color: var(--oro-brillante); font-size: .85rem; }
+  .progress-bar { width: 100%; height: 3px; background: rgba(201,146,42,.18); margin-bottom: 26px; }
+  .progress-fill { height: 100%; background: var(--oro); transition: width .4s ease; }
+
+  .question-text {
+    font-family: 'Cinzel', serif; font-size: clamp(.95rem,2.3vw,1.2rem);
+    color: var(--blanco); text-align: center; margin-bottom: 10px; line-height: 1.5;
+  }
+  .question-hl {
+    color: var(--oro-brillante); font-size: clamp(1.1rem,3vw,1.5rem);
+    display: block; margin: 4px 0 18px;
+  }
+  .question-sub {
+    font-style: italic; color: var(--crema-oscuro); opacity: .65;
+    text-align: center; margin-bottom: 24px; font-size: .92rem;
+  }
+
+  /* OPTIONS: 4-grid */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+  @media(max-width:520px){ .options-grid { grid-template-columns: 1fr; } }
+
+  /* OPTIONS: all-days column */
+  .days-grid { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+
+  .option-btn {
+    font-family: 'EB Garamond', serif; font-size: 1rem; padding: 12px 15px;
+    border: 1px solid rgba(201,146,42,.33); background: rgba(255,255,255,.03);
+    color: var(--crema); cursor: pointer; text-align: left; transition: all .2s; line-height: 1.3;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--oro); background: rgba(201,146,42,.13); color: var(--oro-claro);
+  }
+  .option-btn.correct { background: var(--verde-ok); border-color: #4caf50; color: var(--verde-txt); }
+  .option-btn.wrong   { background: var(--rojo-err); border-color: #e53935; color: var(--rojo-txt); }
+  .option-btn.selected { border-color: var(--oro); background: rgba(201,146,42,.22); color: var(--oro-brillante); }
+  .option-btn:disabled { cursor: default; }
+
+  .feedback {
+    text-align: center; font-family: 'Cinzel', serif;
+    font-size: .88rem; min-height: 24px; margin-bottom: 12px; letter-spacing: .1em;
+  }
+  .feedback.ok  { color: var(--verde-txt); }
+  .feedback.err { color: var(--rojo-txt); }
+
+  .next-btn, .restart-btn {
+    display: block; margin: 0 auto; font-family: 'Cinzel', serif; font-size: .78rem;
+    letter-spacing: .2em; text-transform: uppercase; padding: 13px 34px;
+    background: var(--oro); color: var(--negro); border: none; cursor: pointer; transition: background .2s;
+  }
+  .next-btn:hover, .restart-btn:hover { background: var(--oro-brillante); }
+
+  /* IMAGE */
+  .img-frame {
+    width: 100%; max-width: 400px; margin: 0 auto 22px;
+    border: 2px solid rgba(201,146,42,.35); aspect-ratio: 4/3;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.38); overflow: hidden;
+  }
+  .img-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .img-placeholder { text-align: center; padding: 20px; color: rgba(201,146,42,.4); }
+  .img-placeholder .ph-icon { font-size: 2.8rem; display: block; margin-bottom: 8px; }
+  .img-placeholder p { font-size: .78rem; font-family: 'Cinzel', serif; }
+
+  /* TEXT INPUT */
+  .text-input-wrap {
+    display: flex; gap: 10px; margin: 0 auto 16px;
+    max-width: 420px;
+  }
+  .text-input {
+    flex: 1; padding: 12px 15px; background: rgba(255,255,255,.05);
+    border: 1px solid rgba(201,146,42,.38); color: var(--crema);
+    font-family: 'EB Garamond', serif; font-size: 1rem; outline: none;
+  }
+  .text-input:focus { border-color: var(--oro); }
+  .check-btn {
+    font-family: 'Cinzel', serif; font-size: .74rem; letter-spacing: .14em; text-transform: uppercase;
+    padding: 12px 18px; background: transparent; color: var(--oro);
+    border: 1px solid var(--oro); cursor: pointer; transition: all .2s;
+  }
+  .check-btn:hover { background: var(--oro); color: var(--negro); }
+
+  /* RESULT */
+  .result-screen { text-align: center; padding: 16px 0; }
+  .big-score {
+    font-family: 'Cinzel Decorative', serif; font-size: clamp(3rem,8vw,5rem);
+    color: var(--oro-brillante); text-shadow: 0 0 60px rgba(240,192,96,.5);
+    margin: 18px 0 6px;
+  }
+  .result-msg {
+    font-family: 'Cinzel', serif; font-size: .95rem;
+    color: var(--crema-oscuro); letter-spacing: .1em; margin-bottom: 28px;
+  }
+
+  /* REFERENCE */
+  .day-group { margin-bottom: 26px; }
+  .day-label {
+    font-family: 'Cinzel', serif; font-size: .78rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--oro); margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+  }
+  .day-label::after { content:''; flex:1; height:1px; background:rgba(201,146,42,.22); }
+  .cofradia-list { display: flex; flex-direction: column; gap: 5px; }
+  .cofradia-item {
+    padding: 9px 15px; background: rgba(255,255,255,.03);
+    border-left: 2px solid rgba(201,146,42,.28); font-size: 1rem; color: var(--crema);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .dot { width:5px; height:5px; background:var(--oro); border-radius:50%; flex-shrink:0; }
+
+  /* TERM REF */
+  .term-ref-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(210px,1fr)); gap: 12px; }
+  .term-ref-card { border: 1px solid rgba(201,146,42,.22); background: rgba(255,255,255,.03); padding: 14px; }
+  .term-ref-name { font-family: 'Cinzel', serif; font-size: .85rem; color: var(--oro-claro); margin-bottom: 5px; }
+  .term-ref-desc { font-size: .88rem; font-style: italic; opacity: .65; line-height: 1.4; }
+
+  .hidden { display: none !important; }
+
+  /* MODE TOGGLE */
+  .mode-toggle-row {
+    display: flex; justify-content: center; gap: 10px;
+    margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .mode-btn {
+    font-family: 'Cinzel', serif; font-size: .76rem;
+    letter-spacing: .12em; text-transform: uppercase;
+    padding: 11px 22px; border: 1px solid rgba(201,146,42,.4);
+    background: transparent; color: var(--crema-oscuro);
+    cursor: pointer; transition: all .2s;
+  }
+  .mode-btn .mode-icon { font-size: 1rem; margin-right: 6px; }
+  .mode-btn.sel {
+    background: rgba(201,146,42,.18); border-color: var(--oro);
+    color: var(--oro-claro);
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,.92);
+    align-items: center; justify-content: center;
+    cursor: zoom-out;
+    animation: lbIn .2s ease;
+  }
+  .lightbox.open { display: flex; }
+  @keyframes lbIn { from{opacity:0} to{opacity:1} }
+  .lightbox img {
+    max-width: 92vw; max-height: 88vh;
+    object-fit: contain;
+    border: 1px solid rgba(201,146,42,.4);
+    box-shadow: 0 0 80px rgba(0,0,0,.8);
+    cursor: default;
+  }
+  .lb-close {
+    position: fixed; top: 18px; right: 22px;
+    font-size: 2rem; color: var(--oro-claro);
+    cursor: pointer; line-height: 1;
+    font-family: 'Cinzel', serif;
+    opacity: .8; transition: opacity .2s;
+    z-index: 1001;
+  }
+  .lb-close:hover { opacity: 1; }
+  .lb-hint {
+    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-family: 'Cinzel', serif; font-size: .72rem; letter-spacing: .15em;
+    color: var(--crema-oscuro); opacity: .4; text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  /* make img-frame images feel clickable */
+  .img-frame img {
+    cursor: zoom-in; transition: filter .2s;
+  }
+  .img-frame img:hover { filter: brightness(1.1); }
+  .img-frame::after {
+    content: '🔍'; position: absolute; bottom: 8px; right: 10px;
+    font-size: 1.1rem; opacity: 0; transition: opacity .2s; pointer-events: none;
+  }
+  .img-frame { position: relative; }
+  .img-frame:has(img):hover::after { opacity: .7; }
+</style>
+
+</head>
+<body>
+
+<!-- LIGHTBOX OVERLAY -->
+<div class="lightbox" id="lightbox" onclick="closeLB(event)">
+  <span class="lb-close" onclick="closeLightbox()">✕</span>
+  <img id="lb-img" src="" alt="" onclick="event.stopPropagation()">
+  <span class="lb-hint">Clic o Esc para cerrar</span>
+</div>
+
+<div class="header">
+  <div class="candles">
+    <span class="candle">🕯️</span>
+    <span class="candle">🕯️</span>
+    <span class="candle">🕯️</span>
+  </div>
+  <h1>Semana Santa<br>de Cádiz</h1>
+  <p>Guía de estudio y práctica</p>
+  <div class="ornament">✦</div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showSection('s1')" id="btn-s1"><span>📅 Días y Cofradías</span></button>
+  <button class="nav-btn"        onclick="showSection('s2')" id="btn-s2"><span>🎭 Identificar Pasos</span></button>
+  <button class="nav-btn"        onclick="showSection('s3')" id="btn-s3"><span>📖 Terminología</span></button>
+</nav>
+
+<main class="container">
+
+  <!-- S1 -->
+  <section class="section active" id="s1">
+    <div class="tabs">
+      <button class="tab-btn active" id="s1-tab-ref" onclick="switchTab('s1','ref')">Consultar</button>
+      <button class="tab-btn"        id="s1-tab-qz"  onclick="switchTab('s1','qz')">Practicar</button>
+    </div>
+    <div class="tab-content active" id="s1-ref"><div id="dias-ref-table"></div></div>
+    <div class="tab-content"        id="s1-qz"><div class="card" id="dias-quiz-card"></div></div>
+  </section>
+
+  <!-- S2 -->
+  <section class="section" id="s2">
+    <div class="tabs">
+      <button class="tab-btn active" id="s2-tab-ref" onclick="switchTab('s2','ref')">Consultar</button>
+      <button class="tab-btn"        id="s2-tab-qz"  onclick="switchTab('s2','qz')">Practicar</button>
+    </div>
+    <div class="tab-content active" id="s2-ref"><div id="pasos-ref-table"></div></div>
+    <div class="tab-content"        id="s2-qz"><div class="card" id="pasos-quiz-card"></div></div>
+  </section>
+
+  <!-- S3 -->
+  <section class="section" id="s3">
+    <div class="tabs">
+      <button class="tab-btn active" id="s3-tab-ref" onclick="switchTab('s3','ref')">Consultar</button>
+      <button class="tab-btn"        id="s3-tab-qz"  onclick="switchTab('s3','qz')">Practicar</button>
+    </div>
+    <div class="tab-content active" id="s3-ref"><div id="term-ref-table"></div></div>
+    <div class="tab-content"        id="s3-qz"><div class="card" id="term-quiz-card"></div></div>
+  </section>
+
+</main>
+
+<script src="datos.js"></script>
+<script>
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+
+function showSection(id) {
+  if (id !== 's1') _cleanDiasKey();
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('btn-' + id).classList.add('active');
+}
+
+function switchTab(sec, tab) {
+  ['ref','qz'].forEach(t => {
+    document.getElementById(sec+'-tab-'+t).classList.toggle('active', t===tab);
+    document.getElementById(sec+'-'+t).classList.toggle('active', t===tab);
+  });
+  if (tab === 'ref' && sec === 's1') _cleanDiasKey();
+  if (tab === 'qz') {
+    if (sec === 's1') renderDiasSetup();
+    if (sec === 's2') renderPasosSetup();
+    if (sec === 's3') renderTermSetup();
+  }
+}
+
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+
+const shuffle = arr => [...arr].sort(() => Math.random() - .5);
+const pick    = (arr, n) => shuffle(arr).slice(0, n);
+const escQ    = s => s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+const norm    = s => s.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'');
+
+function imgBlock(item, icon) {
+  if (item.imagen) return `<img src="${item.imagen}" alt="" onclick="openLightbox(this.src)" onerror="this.parentElement.innerHTML=phHTML('${icon}','Imagen no disponible')">`;
+  return `<div class="img-placeholder"><span class="ph-icon">${icon}</span><p>Imagen pendiente</p><p style="opacity:.45;font-size:.7rem;margin-top:4px">Añade la URL en COFRADIAS[…].imagen</p></div>`;
+}
+function openLightbox(src) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeLB(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeLightbox(); return; }
+  if (e.key === 'Enter') {
+    if (document.getElementById('lightbox').classList.contains('open')) { closeLightbox(); return; }
+    // If a dias button is selected but not yet answered, let the dias handler deal with it
+    if (!D.done && document.querySelector('#opts-dias .option-btn.selected')) return;
+    if (!P.done && document.querySelector('#opts-pasos .option-btn.selected')) return;
+    const nextBtn = document.querySelector('.next-btn:not(.hidden)');
+    if (nextBtn) { e.preventDefault(); nextBtn.click(); }
+  }
+});
+function phHTML(icon, lbl) {
+  return `<div class='img-placeholder'><span class='ph-icon'>${icon}</span><p>${lbl}</p></div>`;
+}
+
+function numPickerHTML(total, gridId) {
+  const steps = [5,10,15,20,25,30].filter(n => n < total);
+  steps.push(total);
+  return `
+    <p class="setup-label">Número de preguntas</p>
+    <div class="num-grid" id="${gridId}">
+      ${steps.map(n => `<button class="num-btn${n===total?' sel':''}" data-n="${n}"
+        onclick="pickNum(this,'${gridId}')">${n===total?'Todas ('+total+')':n}</button>`).join('')}
+    </div>`;
+}
+function pickNum(btn, gridId) {
+  document.querySelectorAll('#'+gridId+' .num-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+function getPickedN(gridId) {
+  return +document.querySelector('#'+gridId+' .num-btn.sel').dataset.n;
+}
+
+let _restartFn = null;
+function _restart() { if (_restartFn) _restartFn(); }
+
+function renderResult(card, score, total, onRestart) {
+  _restartFn = onRestart;
+  const pct = Math.round(score/total*100);
+  const msg = pct===100?'¡Perfección absoluta! 🌟'
+            : pct>=80 ?'Excelente, eres un experto 🕯️'
+            : pct>=60 ?'Muy bien, sigue practicando'
+            : pct>=40 ?'Puedes mejorar, ¡ánimo!'
+                      :'Repasa la guía y vuelve a intentarlo';
+  card.innerHTML = `
+    <div class="result-screen">
+      <div class="ornament">✦</div>
+      <p style="font-family:'Cinzel',serif;letter-spacing:.15em;font-size:.76rem;opacity:.5;text-transform:uppercase">Resultado final</p>
+      <div class="big-score">${score}<span style="font-size:.42em;opacity:.5"> / ${total}</span></div>
+      <p class="result-msg">${msg}</p>
+      <button class="restart-btn" onclick="_restart()">↩ Volver a empezar</button>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//  BUILD REFERENCE TABLES (on load)
+// ══════════════════════════════════════════
+(function buildRefs() {
+  // S1 reference
+  const byDay = {};
+  DIAS_ORDEN.forEach(d => byDay[d] = []);
+  COFRADIAS.forEach(c => byDay[c.dia] && byDay[c.dia].push(c.nombre));
+  let html1 = '';
+  DIAS_ORDEN.forEach(dia => {
+    const list = byDay[dia];
+    if (!list.length) return;
+    html1 += `<div class="day-group"><div class="day-label">${dia}</div><div class="cofradia-list">
+      ${list.map(c=>`<div class="cofradia-item"><span class="dot"></span>${c}</div>`).join('')}
+    </div></div>`;
+  });
+  document.getElementById('dias-ref-table').innerHTML = html1;
+
+  // S2 reference
+  let html2 = '';
+  DIAS_ORDEN.forEach(dia => {
+    const list = COFRADIAS.filter(c => c.dia===dia);
+    if (!list.length) return;
+    html2 += `<div class="day-group"><div class="day-label">${dia}</div><div class="cofradia-list">`;
+    list.forEach(c => {
+      html2 += `<div class="cofradia-item" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <span style="font-family:'Cinzel',serif;font-size:.85rem;color:var(--oro-claro)">${c.nombre}</span>
+        ${c.imagen?`<img src="${c.imagen}" onclick="openLightbox(this.src)" style="max-height:80px;border:1px solid rgba(201,146,42,.3);cursor:zoom-in" alt="">`:
+          `<span style="font-size:.75rem;opacity:.4;font-style:italic">imagen pendiente</span>`}
+      </div>`;
+    });
+    html2 += '</div></div>';
+  });
+  document.getElementById('pasos-ref-table').innerHTML = html2;
+
+  // S3 reference
+  let html3 = '<div class="term-ref-grid">';
+  TERMINOLOGIA.forEach(t => {
+    html3 += `<div class="term-ref-card">
+      ${t.imagen?`<img src="${t.imagen}" onclick="openLightbox(this.src)" style="width:100%;max-height:90px;object-fit:cover;margin-bottom:8px;border:1px solid rgba(201,146,42,.2);cursor:zoom-in" alt="">`:``}
+      <div class="term-ref-name">${t.termino}</div>
+      <div class="term-ref-desc">${t.desc}</div>
+    </div>`;
+  });
+  html3 += '</div>';
+  document.getElementById('term-ref-table').innerHTML = html3;
+})();
+
+// ══════════════════════════════════════════
+//  S1 — QUIZ DÍAS (all options shown)
+// ══════════════════════════════════════════
+let D = {};
+
+function renderDiasSetup() {
+  _cleanDiasKey();
+  document.getElementById('dias-quiz-card').innerHTML = `
+    <div class="setup-screen">
+      <p class="setup-title">📅 Días y Cofradías</p>
+      <p class="setup-sub">¿En qué día de la Semana Santa sale cada cofradía?</p>
+      ${numPickerHTML(COFRADIAS.length, 'num-dias')}
+      <button class="start-btn" onclick="startDias()">Comenzar el examen</button>
+    </div>`;
+}
+
+function startDias() {
+  const n = getPickedN('num-dias');
+  D = { q: shuffle(COFRADIAS).slice(0,n), i:0, score:0, done:false };
+  renderDiasQ();
+}
+
+function renderDiasQ() {
+  const card = document.getElementById('dias-quiz-card');
+  if (D.i >= D.q.length) { renderResult(card, D.score, D.q.length, renderDiasSetup); return; }
+  const q = D.q[D.i];
+  const pct = Math.round(D.i/D.q.length*100);
+  card.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-badge">📅 Días · ${D.i+1} / ${D.q.length}</span>
+      <span class="score-display">✦ ${D.score} correctas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="question-text">¿En qué día sale…<span class="question-hl">${q.nombre}</span></p>
+    <div class="days-grid" id="opts-dias">
+      ${DIAS_ORDEN.map((dia,idx)=>`<button class="option-btn" onclick="ansD(this,'${escQ(dia)}','${escQ(q.dia)}')"><span style="font-family:'Cinzel',serif;font-size:.7rem;opacity:.45;margin-right:8px;letter-spacing:.05em">${idx}</span>${dia}</button>`).join('')}
+    </div>
+    <div class="feedback" id="fb-dias"></div>
+    <button class="next-btn hidden" id="next-dias" onclick="nextDias()">Siguiente →</button>`;
+
+  // keyboard shortcuts: number → select button; Enter → confirm selection
+  document.getElementById('dias-quiz-card')._keyHandler = function(e) {
+    if (D.done) return;
+    if (e.key === 'Enter') {
+      const sel = document.querySelector('#opts-dias .option-btn.selected');
+      if (sel) { e.stopPropagation(); sel.click(); }
+      return;
+    }
+    const idx = parseInt(e.key);
+    if (isNaN(idx)) return;
+    const btns = [...document.querySelectorAll('#opts-dias .option-btn')];
+    if (!btns[idx]) return;
+    e.preventDefault();
+    btns.forEach(b => b.classList.remove('selected'));
+    btns[idx].classList.add('selected');
+  };
+  if (window._diasKeyHandler) document.removeEventListener('keydown', window._diasKeyHandler);
+  window._diasKeyHandler = document.getElementById('dias-quiz-card')._keyHandler;
+  document.addEventListener('keydown', window._diasKeyHandler);
+}
+
+function ansD(btn, chosen, correct) {
+  if (D.done) return; D.done = true;
+  if (chosen===correct) D.score++;
+  document.querySelectorAll('#opts-dias .option-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim()===correct) b.classList.add('correct');
+    if (b.textContent.trim()===chosen && chosen!==correct) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('fb-dias');
+  fb.textContent = chosen===correct ? '✦ ¡Correcto!' : `✗ Era: ${correct}`;
+  fb.className = 'feedback '+(chosen===correct?'ok':'err');
+  document.getElementById('next-dias').classList.remove('hidden');
+}
+function nextDias() {
+  D.i++; D.done=false;
+  renderDiasQ();
+}
+
+function _cleanDiasKey() {
+  if (window._diasKeyHandler) {
+    document.removeEventListener('keydown', window._diasKeyHandler);
+    window._diasKeyHandler = null;
+  }
+}
+
+// ══════════════════════════════════════════
+//  S2 — QUIZ PASOS (multiple choice OR text input)
+// ══════════════════════════════════════════
+let P = {};
+
+function renderPasosSetup() {
+  _cleanPasosKey();
+  document.getElementById('pasos-quiz-card').innerHTML = `
+    <div class="setup-screen">
+      <p class="setup-title">🎭 Identificar Pasos</p>
+      <p class="setup-sub">Dado el paso o misterio, ¿a qué cofradía pertenece?</p>
+      <p class="setup-label">Modo de respuesta</p>
+      <div class="mode-toggle-row">
+        <button class="mode-btn sel" id="mode-multi" onclick="selectMode('multi')">
+          <span class="mode-icon">🔘</span>Respuesta múltiple
+        </button>
+        <button class="mode-btn" id="mode-texto" onclick="selectMode('texto')">
+          <span class="mode-icon">✏️</span>Respuesta libre
+        </button>
+      </div>
+      ${numPickerHTML(COFRADIAS.length, 'num-pasos')}
+      <button class="start-btn" onclick="startPasos()">Comenzar el examen</button>
+    </div>`;
+}
+
+function selectMode(m) {
+  document.getElementById('mode-multi').classList.toggle('sel', m==='multi');
+  document.getElementById('mode-texto').classList.toggle('sel', m==='texto');
+}
+
+function startPasos() {
+  const n = getPickedN('num-pasos');
+  const modo = document.getElementById('mode-texto').classList.contains('sel') ? 'texto' : 'multi';
+  P = { q: shuffle(COFRADIAS).slice(0,n), i:0, score:0, done:false, modo };
+  renderPasosQ();
+}
+
+function renderPasosQ() {
+  const card = document.getElementById('pasos-quiz-card');
+  if (P.i >= P.q.length) { renderResult(card, P.score, P.q.length, renderPasosSetup); return; }
+  const q = P.q[P.i];
+  const pct = Math.round(P.i/P.q.length*100);
+
+  const shuffledOpts = shuffle([q.nombre, ...pick(COFRADIAS.map(c=>c.nombre).filter(n=>n!==q.nombre),3)]);
+
+  const answArea = P.modo === 'texto'
+    ? `<datalist id="dl-cofradias">
+        ${COFRADIAS.map(c=>`<option value="${c.nombre}">`).join('')}
+       </datalist>
+       <div class="text-input-wrap">
+         <input class="text-input" id="pasos-input" list="dl-cofradias"
+           placeholder="Escribe o elige el nombre…"
+           onkeydown="if(event.key==='Enter'){chkPasosTexto();event.stopPropagation();}">
+         <button class="check-btn" onclick="chkPasosTexto()">Comprobar</button>
+       </div>`
+    : `<div class="options-grid" id="opts-pasos">
+        ${shuffledOpts.map((o,i)=>`<button class="option-btn" onclick="ansP(this,'${escQ(o)}','${escQ(q.nombre)}')"><span style="font-family:'Cinzel',serif;font-size:.7rem;opacity:.45;margin-right:8px">${i+1}</span>${o}</button>`).join('')}
+       </div>`;
+
+  card.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-badge">🎭 Pasos · ${P.i+1} / ${P.q.length}</span>
+      <span class="score-display">✦ ${P.score} correctas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="question-text">¿A qué cofradía pertenece este paso?</p>
+    <div class="img-frame">${imgBlock(q,'🎭')}</div>
+    ${answArea}
+    <div class="feedback" id="fb-pasos"></div>
+    <button class="next-btn hidden" id="next-pasos" onclick="nextPasos()">Siguiente →</button>`;
+
+  if (P.modo === 'texto') {
+    document.getElementById('pasos-input').focus();
+  } else {
+    // keyboard shortcuts for multi: 1-4 select, Enter confirms
+    if (window._pasosKeyHandler) document.removeEventListener('keydown', window._pasosKeyHandler);
+    window._pasosKeyHandler = function(e) {
+      if (P.done) return;
+      if (e.key === 'Enter') {
+        const sel = document.querySelector('#opts-pasos .option-btn.selected');
+        if (sel) { e.stopPropagation(); sel.click(); }
+        return;
+      }
+      const idx = parseInt(e.key) - 1;
+      if (isNaN(idx) || idx < 0 || idx > 3) return;
+      const btns = [...document.querySelectorAll('#opts-pasos .option-btn')];
+      if (!btns[idx]) return;
+      e.preventDefault();
+      btns.forEach(b => b.classList.remove('selected'));
+      btns[idx].classList.add('selected');
+    };
+    document.addEventListener('keydown', window._pasosKeyHandler);
+  }
+}
+
+function ansP(btn, chosen, correct) {
+  if (P.done) return; P.done = true;
+  if (chosen===correct) P.score++;
+  document.querySelectorAll('#opts-pasos .option-btn').forEach(b => {
+    b.disabled=true;
+    if (b.textContent.trim()===correct) b.classList.add('correct');
+    if (b.textContent.trim()===chosen && chosen!==correct) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('fb-pasos');
+  fb.textContent = chosen===correct ? '✦ ¡Correcto!' : `✗ Era: ${correct}`;
+  fb.className = 'feedback '+(chosen===correct?'ok':'err');
+  document.getElementById('next-pasos').classList.remove('hidden');
+}
+
+function chkPasosTexto() {
+  if (P.done) return;
+  const inp = document.getElementById('pasos-input');
+  if (!inp.value.trim()) return;
+  P.done = true;
+  const q = P.q[P.i];
+  const ok = norm(inp.value) === norm(q.nombre);
+  if (ok) P.score++;
+  inp.disabled = true;
+  const fb = document.getElementById('fb-pasos');
+  fb.textContent = ok ? `✦ ¡Correcto!` : `✗ Era: ${q.nombre}`;
+  fb.className = 'feedback '+(ok?'ok':'err');
+  document.getElementById('next-pasos').classList.remove('hidden');
+}
+
+function nextPasos() {
+  _cleanPasosKey();
+  P.i++; P.done=false; renderPasosQ();
+}
+
+function _cleanPasosKey() {
+  if (window._pasosKeyHandler) {
+    document.removeEventListener('keydown', window._pasosKeyHandler);
+    window._pasosKeyHandler = null;
+  }
+}
+
+// ══════════════════════════════════════════
+//  S3 — QUIZ TERMINOLOGÍA (free text)
+// ══════════════════════════════════════════
+let T = {};
+
+function renderTermSetup() {
+  document.getElementById('term-quiz-card').innerHTML = `
+    <div class="setup-screen">
+      <p class="setup-title">📖 Terminología</p>
+      <p class="setup-sub">Observa la imagen y la descripción — ¿cómo se llama este elemento?</p>
+      ${numPickerHTML(TERMINOLOGIA.length, 'num-term')}
+      <button class="start-btn" onclick="startTerm()">Comenzar el examen</button>
+    </div>`;
+}
+
+function startTerm() {
+  const n = getPickedN('num-term');
+  T = { q: shuffle(TERMINOLOGIA).slice(0,n), i:0, score:0, done:false };
+  renderTermQ();
+}
+
+function renderTermQ() {
+  const card = document.getElementById('term-quiz-card');
+  if (T.i >= T.q.length) { renderResult(card, T.score, T.q.length, renderTermSetup); return; }
+  const q = T.q[T.i];
+  const pct = Math.round(T.i/T.q.length*100);
+  card.innerHTML = `
+    <div class="quiz-header">
+      <span class="quiz-badge">📖 Terminología · ${T.i+1} / ${T.q.length}</span>
+      <span class="score-display">✦ ${T.score} correctas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <p class="question-text">¿Cómo se llama este elemento?</p>
+    <div class="img-frame">${imgBlock(q,'📖')}</div>
+    <p class="question-sub">${q.desc}</p>
+    <div class="text-input-wrap">
+      <input class="text-input" id="term-input" placeholder="Escribe el término…"
+        onkeydown="if(event.key==='Enter')chkTerm()">
+      <button class="check-btn" onclick="chkTerm()">Comprobar</button>
+    </div>
+    <div class="feedback" id="fb-term"></div>
+    <button class="next-btn hidden" id="next-term" onclick="nextTerm()">Siguiente →</button>`;
+  document.getElementById('term-input').focus();
+}
+
+function chkTerm() {
+  if (T.done) return;
+  const inp = document.getElementById('term-input');
+  if (!inp.value.trim()) return;
+  T.done = true;
+  const q = T.q[T.i];
+  const c = norm(q.termino), g = norm(inp.value);
+  const ok = g===c || (c.includes(g) && g.length>3);
+  if (ok) T.score++;
+  inp.disabled = true;
+  const fb = document.getElementById('fb-term');
+  fb.textContent = ok ? `✦ ¡Correcto! → ${q.termino}` : `✗ Era: ${q.termino}`;
+  fb.className = 'feedback '+(ok?'ok':'err');
+  document.getElementById('next-term').classList.remove('hidden');
+}
+function nextTerm() { T.i++; T.done=false; renderTermQ(); }
+</script>
+</body>
+</html>
