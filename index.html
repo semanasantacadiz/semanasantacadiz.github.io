@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semana Santa de Cádiz</title>
+<link rel="icon" type="image/x-icon" href="logo.svg">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -428,9 +429,6 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closeLightbox(); return; }
   if (e.key === 'Enter') {
     if (document.getElementById('lightbox').classList.contains('open')) { closeLightbox(); return; }
-    // If a dias button is selected but not yet answered, let the dias handler deal with it
-    if (!D.done && document.querySelector('#opts-dias .option-btn.selected')) return;
-    if (!P.done && document.querySelector('#opts-pasos .option-btn.selected')) return;
     const nextBtn = document.querySelector('.next-btn:not(.hidden)');
     if (nextBtn) { e.preventDefault(); nextBtn.click(); }
   }
@@ -563,27 +561,20 @@ function renderDiasQ() {
     <div class="days-grid" id="opts-dias">
       ${DIAS_ORDEN.map((dia,idx)=>`<button class="option-btn" onclick="ansD(this,'${escQ(dia)}','${escQ(q.dia)}')"><span style="font-family:'Cinzel',serif;font-size:.7rem;opacity:.45;margin-right:8px;letter-spacing:.05em">${idx}</span>${dia}</button>`).join('')}
     </div>
-    <div class="feedback" id="fb-dias"></div>
-    <button class="next-btn hidden" id="next-dias" onclick="nextDias()">Siguiente →</button>`;
+    <button class="next-btn hidden" id="next-dias" onclick="nextDias()">Siguiente</button>`;
 
-  // keyboard shortcuts: number → select button; Enter → confirm selection
-  document.getElementById('dias-quiz-card')._keyHandler = function(e) {
+  // number → answer immediately; Enter → next question only
+  if (window._diasKeyHandler) document.removeEventListener('keydown', window._diasKeyHandler);
+  window._diasKeyHandler = function(e) {
+    if (e.key === 'Enter') return; // handled by global listener
     if (D.done) return;
-    if (e.key === 'Enter') {
-      const sel = document.querySelector('#opts-dias .option-btn.selected');
-      if (sel) { e.stopPropagation(); sel.click(); }
-      return;
-    }
     const idx = parseInt(e.key);
     if (isNaN(idx)) return;
     const btns = [...document.querySelectorAll('#opts-dias .option-btn')];
     if (!btns[idx]) return;
     e.preventDefault();
-    btns.forEach(b => b.classList.remove('selected'));
-    btns[idx].classList.add('selected');
+    btns[idx].click();
   };
-  if (window._diasKeyHandler) document.removeEventListener('keydown', window._diasKeyHandler);
-  window._diasKeyHandler = document.getElementById('dias-quiz-card')._keyHandler;
   document.addEventListener('keydown', window._diasKeyHandler);
 }
 
@@ -592,12 +583,10 @@ function ansD(btn, chosen, correct) {
   if (chosen===correct) D.score++;
   document.querySelectorAll('#opts-dias .option-btn').forEach(b => {
     b.disabled = true;
-    if (b.textContent.trim()===correct) b.classList.add('correct');
-    if (b.textContent.trim()===chosen && chosen!==correct) b.classList.add('wrong');
+    const label = b.textContent.trim().replace(/^[0-9]\s*/,'');
+    if (label === correct && chosen !== correct) b.classList.add('correct');
   });
-  const fb = document.getElementById('fb-dias');
-  fb.textContent = chosen===correct ? '✦ ¡Correcto!' : `✗ Era: ${correct}`;
-  fb.className = 'feedback '+(chosen===correct?'ok':'err');
+  btn.classList.add(chosen===correct ? 'correct' : 'wrong');
   document.getElementById('next-dias').classList.remove('hidden');
 }
 function nextDias() {
@@ -680,28 +669,22 @@ function renderPasosQ() {
     <p class="question-text">¿A qué cofradía pertenece este paso?</p>
     <div class="img-frame">${imgBlock(q,'🎭')}</div>
     ${answArea}
-    <div class="feedback" id="fb-pasos"></div>
-    <button class="next-btn hidden" id="next-pasos" onclick="nextPasos()">Siguiente →</button>`;
+    <button class="next-btn hidden" id="next-pasos" onclick="nextPasos()">Siguiente</button>`;
 
   if (P.modo === 'texto') {
     document.getElementById('pasos-input').focus();
   } else {
-    // keyboard shortcuts for multi: 1-4 select, Enter confirms
+    // number → answer immediately; Enter → next (handled globally)
     if (window._pasosKeyHandler) document.removeEventListener('keydown', window._pasosKeyHandler);
     window._pasosKeyHandler = function(e) {
+      if (e.key === 'Enter') return; // handled by global listener
       if (P.done) return;
-      if (e.key === 'Enter') {
-        const sel = document.querySelector('#opts-pasos .option-btn.selected');
-        if (sel) { e.stopPropagation(); sel.click(); }
-        return;
-      }
       const idx = parseInt(e.key) - 1;
       if (isNaN(idx) || idx < 0 || idx > 3) return;
       const btns = [...document.querySelectorAll('#opts-pasos .option-btn')];
       if (!btns[idx]) return;
       e.preventDefault();
-      btns.forEach(b => b.classList.remove('selected'));
-      btns[idx].classList.add('selected');
+      btns[idx].click();
     };
     document.addEventListener('keydown', window._pasosKeyHandler);
   }
@@ -711,13 +694,11 @@ function ansP(btn, chosen, correct) {
   if (P.done) return; P.done = true;
   if (chosen===correct) P.score++;
   document.querySelectorAll('#opts-pasos .option-btn').forEach(b => {
-    b.disabled=true;
-    if (b.textContent.trim()===correct) b.classList.add('correct');
-    if (b.textContent.trim()===chosen && chosen!==correct) b.classList.add('wrong');
+    b.disabled = true;
+    const label = b.textContent.trim().replace(/^[0-9]\s*/,'');
+    if (label === correct && chosen !== correct) b.classList.add('correct');
   });
-  const fb = document.getElementById('fb-pasos');
-  fb.textContent = chosen===correct ? '✦ ¡Correcto!' : `✗ Era: ${correct}`;
-  fb.className = 'feedback '+(chosen===correct?'ok':'err');
+  btn.classList.add(chosen===correct ? 'correct' : 'wrong');
   document.getElementById('next-pasos').classList.remove('hidden');
 }
 
@@ -789,7 +770,7 @@ function renderTermQ() {
       <button class="check-btn" onclick="chkTerm()">Comprobar</button>
     </div>
     <div class="feedback" id="fb-term"></div>
-    <button class="next-btn hidden" id="next-term" onclick="nextTerm()">Siguiente →</button>`;
+    <button class="next-btn hidden" id="next-term" onclick="nextTerm()">Siguiente</button>`;
   document.getElementById('term-input').focus();
 }
 
